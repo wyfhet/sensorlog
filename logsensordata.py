@@ -29,7 +29,7 @@ DEBUG = True
 Farenheit = False
 
 
-def dprint(message):
+def print(message):
     if (DEBUG):
         print
         message
@@ -44,7 +44,7 @@ def ProcessMessageThread(value, value2, DevId, type):
 
 
 def LogTelemetry(devid, type, value, uom):
-    dprint("loggin entry")
+    print("loggin entry")
     current_time = datetime.datetime.now()
     json_body = [{
         "measurement": type,
@@ -61,17 +61,17 @@ def LogTelemetry(devid, type, value, uom):
     client = InfluxDBClient(host='localhost', port=8086)
     client.switch_database('luke_temparture_and__humidity')
     client.write_points(json_body);
-    dprint("Telemetry " + str(devid) + "," + str(type) + "," + str(value) + "," + uom + "," + "logged")
+    print("Telemetry " + str(devid) + "," + str(type) + "," + str(value) + "," + uom + "," + "logged")
 
 
 def ProcessMessage(value, DevId, type, uom):
     # Notify the host that there is new data from a sensor (e.g. door open)
     try:
-        dprint("Processing data : DevId=" + str(DevId) + ",Type=" + str(type) + ",Value=" + str(value))
+        print("Processing data : DevId=" + str(DevId) + ",Type=" + str(type) + ",Value=" + str(value))
         LogTelemetry(DevId, type, value, uom)
 
     except Exception as e:
-        dprint(e)
+        print(e)
     return (0)
 
 
@@ -110,7 +110,7 @@ def queue_processing():
                 message = rfsettings.message_queue.pop()
                 devID = message[0]
                 data = message[1]
-                dprint(time.strftime("%c") + " " + message[0] + message[1])
+                print(time.strftime("%c") + " " + message[0] + message[1])
                 if data.startswith('BUTTONON'):
                     sensordata = 0
                     db_type = 1
@@ -195,7 +195,7 @@ def queue_processing():
                     if bme_messages == 5:
                         bme280 = process_bme_reading(bme_data, devID)
                         if bme280.error != "":
-                            dprint(bme280.error)
+                            print(bme280.error)
                         else:
                             if bme280.temp_rt == 1:
                                 if Farenheit:
@@ -243,9 +243,9 @@ def DoFahrenheitConversion(value):
 
 
 def main():
-    dprint("started main")
+    print("started main")
     rfsettings.init()
-    dprint("finished rfsettings.init()")
+    print("finished rfsettings.init()")
     a = Thread(target=rf2serial, args=())
     a.start()
 

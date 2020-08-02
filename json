@@ -1,0 +1,17 @@
+def LogTelemetry(devid, type, value, uom):
+    current_time = datetime.datetime.now()
+    json_body = [{
+        "measurement": type,
+        "tags": {
+            "uom": uom,
+            "deviceId": devid
+        },
+        "time": current_time,
+        "fields": {
+            "value": value
+        }}];
+    # log the temperature to the database
+    # open database connection
+    client = InfluxDBClient(host='localhost', port=8086);
+    client.write_points(json_body);
+    dprint("Telemetry " + str(devid) + "," + str(type) + "," + str(value) + "," + uom + "," + "logged"

@@ -44,6 +44,7 @@ def ProcessMessageThread(value, value2, DevId, type):
 
 
 def LogTelemetry(devid, type, value, uom):
+    dprint("loggin entry")
     current_time = datetime.datetime.now()
     json_body = [{
         "measurement": type,

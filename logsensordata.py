@@ -30,13 +30,13 @@ Farenheit = False
 
 def dprint(message):
   if (DEBUG):
-    print message
+    print(message)
 
 def ProcessMessageThread(value, value2, DevId, type):
   try:
       thread.start_new_thread(ProcessMessage, (value, value2, DevId, type, ) )
   except:
-      print "Error: unable to start thread"
+      print("Error: unable to start thread")
 
 
 
@@ -58,25 +58,6 @@ def LogTelemetry(devid, type, value, uom):
   # open database connection
   client = InfluxDBClient(host='localhost', port=8086)
   client.write_points(json_body)
-
-  # prepare a cursor object using cursor()
-  # method
-  cursor = db.cursor()
-
-  # build the SQL statement
-  sql = "INSERT INTO telemetry_log (device_id, type, value, date, unit_of_measure) VALUES ('%s', %d, '%s', NOW(), '%c')" % (devid, type, value, uom)
-
-  dprint(sql);
-
-  # Execute the SQL command
-  cursor.execute(sql)
-
-  # Commit your changes in the database
-  db.commit()
-
-  # disconnect from server
-  db.close()
-
   dprint("Telemetry "+ str(devid) + ","+ str(type) + "," + str(value) + "," + uom + "," + "logged");
 
 def ProcessMessage(value, DevId, type, uom):
@@ -90,7 +71,7 @@ def ProcessMessage(value, DevId, type, uom):
 
 def remove_duplicates():
     x=0
-    print "sorted deduplified queue:"
+    print("sorted deduplified queue:")
 
     #sort the queue by ID
     rfsettings.message_queue = sorted(rfsettings.message_queue, key = lambda x: (x[0]))
@@ -104,7 +85,7 @@ def remove_duplicates():
             x=x+1
 
     for x in range(0,len(rfsettings.message_queue)):
-        print rfsettings.message_queue[x][0]+rfsettings.message_queue[x][1]
+        print(rfsettings.message_queue[x][0]+rfsettings.message_queue[x][1])
 
 def queue_processing():
   global measure
@@ -228,8 +209,8 @@ def queue_processing():
   except Exception as e:
       template = "An exception of type {0} occurred. Arguments:\n{1!r}"
       message = template.format(type(e).__name__, e.args)
-      print message
-      print e
+      print(message)
+      print(e)
       rfsettings.event.set()
       exit()
 
@@ -262,8 +243,8 @@ if __name__ == "__main__":
     except Exception as e:
       template = "An exception of type {0} occurred. Arguments:\n{1!r}"
       message = template.format(type(e).__name__, e.args)
-      print message
-      print e
+      print(message)
+      print(e)
       rfsettings.event.set()
     finally:
       rfsettings.event.set()

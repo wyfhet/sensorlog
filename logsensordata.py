@@ -21,9 +21,9 @@ import sys
 from threading import Thread
 import _thread
 from influxdb import InfluxDBClient
-from sensorlog.bme280 import process_bme_reading
-from sensorlog.rf2serial import rf2serial
-import sensorlog.rfsettings
+from bme280 import process_bme_reading
+from rf2serial import rf2serial
+import rfsettings
 import datetime
 DEBUG = True
 Farenheit = False
@@ -80,19 +80,19 @@ def remove_duplicates():
     "sorted deduplified queue:"
 
     # sort the queue by ID
-    sensorlog.rfsettings.message_queue = sorted(sensorlog.rfsettings.message_queue, key=lambda x: (x[0]))
+    rfsettings.message_queue = sorted(rfsettings.message_queue, key=lambda x: (x[0]))
 
     x = 0
-    while x < len(sensorlog.rfsettings.message_queue) - 1:
-        if rfsettings.message_queue[x][0] == sensorlog.rfsettings.message_queue[x + 1][0] and \
-                sensorlog.rfsettings.message_queue[x][1] == sensorlog.rfsettings.message_queue[x + 1][1]:
-            sensorlog.rfsettings.message_queue.pop(x)
+    while x < len(rfsettings.message_queue) - 1:
+        if rfsettings.message_queue[x][0] == rfsettings.message_queue[x + 1][0] and \
+                rfsettings.message_queue[x][1] == rfsettings.message_queue[x + 1][1]:
+            rfsettings.message_queue.pop(x)
         else:
             x = x + 1
 
     for x in range(0, len(rfsettings.message_queue)):
         print
-        sensorlog.rfsettings.message_queue[x][0] + sensorlog.rfsettings.message_queue[x][1]
+        rfsettings.message_queue[x][0] + rfsettings.message_queue[x][1]
 
 
 def queue_processing():
@@ -104,9 +104,9 @@ def queue_processing():
         uom = ""
         start_time = time.time()
         while (True):
-            if len(sensorlog.rfsettings.message_queue) > 0 and not sensorlog.rfsettings.rf_event.is_set():
+            if len(rfsettings.message_queue) > 0 and not rfsettings.rf_event.is_set():
                 remove_duplicates()
-                message = sensorlog.rfsettings.message_queue.pop()
+                message = rfsettings.message_queue.pop()
                 devID = message[0]
                 data = message[1]
                 dprint(time.strftime("%c") + " " + message[0] + message[1])
@@ -214,7 +214,7 @@ def queue_processing():
                     ProcessMessage(sensordata, devID, db_type, uom)
             sensordata = ""
 
-            if sensorlog.rfsettings.event.is_set():
+            if rfsettings.event.is_set():
                 break
 
             elapsed_time = time.time() - start_time
@@ -230,7 +230,7 @@ def queue_processing():
         message
         print
         e
-        sensorlog.rfsettings.event.set()
+        rfsettings.event.set()
         exit()
 
 
@@ -242,7 +242,7 @@ def DoFahrenheitConversion(value):
 
 
 def main():
-    sensorlog.rfsettings.init()
+    rfsettings.init()
 
     a = Thread(target=rf2serial, args=())
     a.start()
@@ -250,7 +250,7 @@ def main():
     b = Thread(target=queue_processing, args=())
     b.start()
 
-    while not sensorlog.rfsettings.event.is_set():
+    while not rfsettings.event.is_set():
         try:
             sleep(1)
         except KeyboardInterrupt:
@@ -268,9 +268,9 @@ if __name__ == "__main__":
         message
         print
         e
-        sensorlog.rfsettings.event.set()
+        rfsettings.event.set()
     finally:
-        sensorlog.rfsettings.event.set()
+        rfsettings.event.set()
         exit()
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import serial
-import sensorlog.rfsettings
+import rfsettings
 from time import sleep
 import time
 
@@ -35,5 +35,5 @@ def rf2serial():
         message
         print
         e
-        sensorlog.rfsettings.event.set()
+        rfsettings.event.set()
         exit()

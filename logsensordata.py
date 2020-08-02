@@ -243,8 +243,9 @@ def DoFahrenheitConversion(value):
 
 
 def main():
+    dprint("started main")
     rfsettings.init()
-
+    dprint("finished rfsettings.init()")
     a = Thread(target=rf2serial, args=())
     a.start()
 
